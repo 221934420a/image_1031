@@ -107,7 +107,21 @@ class _ImageBrowerState extends State<_ImageBrowser> {
     return img;
   }
 
-  previousImage() {}
+  previousImage() {
+    setState(() {
+      widget._imageIndex--;
+      if (widget._imageIndex < 0) {
+        widget._imageIndex = widget._images.length - 1;
+      }
+    });
+  }
 
-  nextImage() {}
+  nextImage() {
+    setState(() {
+      widget._imageIndex++;
+      if (widget._imageIndex >= widget._images.length) {
+        widget._imageIndex = 0;
+      }
+    });
+  }
 }
