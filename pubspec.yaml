@@ -59,6 +59,7 @@ flutter:
     - assets/03_2.png
     - assets/03_3.png
     - assets/04_3.png
+    - assets/test_gif.gif
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

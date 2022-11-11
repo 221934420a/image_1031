@@ -16,20 +16,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatelessWidget {
+  const MyHomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     // 建立 app bar
-    var key = GlobalKey<_ImageBrowerState>();
+    var key = GlobalKey<_ImageBrowserState>();
     var images = <String>[
       "assets/03_2.png",
       "assets/03_3.png",
-      "assets/04_3.png"
+      "assets/04_3.png",
+      "assets/test_gif.gif",
     ];
     var imgBrowser = _ImageBrowser(key, images);
     var previousBtn = IconButton(
@@ -46,39 +49,44 @@ class MyHomePage extends StatelessWidget {
     );
 
     final widget = Center(
-        child: Stack(
-      alignment: Alignment.topCenter,
-      children: <Widget>[
-        Container(
-          child: imgBrowser,
-        ),
-        Container(
-          alignment: Alignment.bottomCenter,
-          margin: EdgeInsets.symmetric(vertical: 10.0),
-          child: Row(
-            children: <Widget>[previousBtn, nextBtn],
-            mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: <Widget>[
+          InkWell(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(imgBrowser.getImageName()),
+              ));
+            },
+            child: Container(
+              child: imgBrowser,
+            ),
           ),
-        ),
-      ],
-    ),);
+          Container(
+            alignment: Alignment.bottomCenter,
+            margin: const EdgeInsets.symmetric(vertical: 50.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[previousBtn, nextBtn],
+            ),
+          ),
+        ],
+      ),);
 
     final appBar = AppBar(
-      title: Text("瀏覽影像"),
+      title: const Text("瀏覽影像"),
     );
-    return Container(
-      child: Scaffold(
-        appBar: appBar,
-        body: widget,
-      ),
+    return Scaffold(
+      appBar: appBar,
+      body: widget,
     );
     //throw UnimplementedError();
   }
 }
 
 class _ImageBrowser extends StatefulWidget {
-  final GlobalKey<_ImageBrowerState> _key;
-  List<String> _images;
+  final GlobalKey<_ImageBrowserState> _key;
+  final List<String> _images;
   late int _imageIndex;
 
   _ImageBrowser(this._key, this._images) : super(key: _key) {
@@ -86,14 +94,18 @@ class _ImageBrowser extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => _ImageBrowerState();
+  State<StatefulWidget> createState() => _ImageBrowserState();
 
   previousImage() => _key.currentState!.previousImage();
 
   nextImage() => _key.currentState!.nextImage();
+
+  getImageName() {
+    return _key.currentState!.getImageName();
+  }
 }
 
-class _ImageBrowerState extends State<_ImageBrowser> {
+class _ImageBrowserState extends State<_ImageBrowser> {
   @override
   Widget build(BuildContext context) {
     var img = PhotoView(
@@ -101,7 +113,7 @@ class _ImageBrowerState extends State<_ImageBrowser> {
       minScale: PhotoViewComputedScale.contained * 0.6,
       maxScale: PhotoViewComputedScale.covered,
       enableRotation: true,
-      backgroundDecoration: BoxDecoration(
+      backgroundDecoration: const BoxDecoration(
         color: Colors.white,
       ),
     );
@@ -124,5 +136,9 @@ class _ImageBrowerState extends State<_ImageBrowser> {
         widget._imageIndex = 0;
       }
     });
+  }
+
+  getImageName() {
+    return widget._images[widget._imageIndex];
   }
 }
