@@ -53,11 +53,12 @@ class MyHomePage extends StatelessWidget {
           child: imgBrowser,
         ),
         Container(
+          alignment: Alignment.bottomCenter,
+          margin: EdgeInsets.symmetric(vertical: 10.0),
           child: Row(
             children: <Widget>[previousBtn, nextBtn],
             mainAxisAlignment: MainAxisAlignment.center,
           ),
-          margin: EdgeInsets.symmetric(vertical: 10.0),
         ),
       ],
     ),);
