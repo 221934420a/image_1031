@@ -1,5 +1,11 @@
 # image_1031
 
+# master-基本功能
+
+# extra-額外功能版本
+圖片瀏覽改用CarouselSlider
+圖片分享功能(share_plus)
+
 11 nov 2022
 首推 未完成
 
