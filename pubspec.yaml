@@ -43,6 +43,7 @@ dependencies:
   url_launcher_android: 6.0.18
   http: any
   path_provider: any
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:

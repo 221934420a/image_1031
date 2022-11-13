@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
 import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-
+import 'package:carousel_slider/carousel_slider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,21 +42,23 @@ class MyHomePage extends StatelessWidget {
       "assets/04_3.png",
       "assets/test_gif.gif",
     ];
-    var imgBrowser = _ImageBrowser(key, images,0);
+    var imgBrowser = _ImageBrowser(key, images, 0);
     var shareBtn = IconButton(
       icon: const Icon(Icons.share),
       onPressed: () async {
         // Share.share("test")
         // Share.shareXFiles([XFile(imgBrowser.getImageLink())]);
-          final url = Uri.parse("https://raw.githubusercontent.com/221934420a/image_1031/master/${imgBrowser.getImageLink()}");
-          final response = await http.get(url);
-          final bytes = response.bodyBytes;
-          final temp = await getTemporaryDirectory();
-          final endIndex = imgBrowser.getImageLink().toString().length;
-          final path = '${temp.path}${imgBrowser.getImageLink().substring(7,endIndex)}';
-          print(path);
-          File(path).writeAsBytesSync(bytes);
-          await Share.shareFiles([path]);
+        final url = Uri.parse(
+            "https://raw.githubusercontent.com/221934420a/image_1031/master/${imgBrowser.getImageLink()}");
+        final response = await http.get(url);
+        final bytes = response.bodyBytes;
+        final temp = await getTemporaryDirectory();
+        final endIndex = imgBrowser.getImageLink().toString().length;
+        final path =
+            '${temp.path}${imgBrowser.getImageLink().substring(7, endIndex)}';
+        print(path);
+        File(path).writeAsBytesSync(bytes);
+        await Share.shareFiles([path]);
         // imgBrowser.getImageLink()
       },
     );
@@ -74,6 +75,27 @@ class MyHomePage extends StatelessWidget {
             },
             child: Container(
               child: imgBrowser,
+            ),
+          ),
+          Container(
+            alignment: Alignment.bottomCenter,
+            margin: const EdgeInsets.symmetric(vertical: 100.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    key.currentState!.previousPage();
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: () {
+                    key.currentState!.nextPage();
+                  },
+                ),
+              ],
             ),
           ),
           Container(
@@ -112,37 +134,84 @@ class _ImageBrowser extends StatefulWidget {
   getImageLink() {
     return _key.currentState!.getImageName();
   }
+
+  nextPage() {
+    _key.currentState!.nextPage();
+  }
+
+  prevPage() {
+    _key.currentState!.previousPage();
+  }
 }
 
 class _ImageBrowserState extends State<_ImageBrowser> {
+  CarouselController buttonCarouselController = CarouselController();
+
   @override
   Widget build(BuildContext context) {
-    // var img = PhotoView(
-    //   imageProvider: AssetImage(widget._images[widget._imageIndex]),
-    //   minScale: PhotoViewComputedScale.contained * 0.6,
-    //   maxScale: PhotoViewComputedScale.covered,
-    //   enableRotation: true,
-    //   backgroundDecoration: const BoxDecoration(
-    //     color: Colors.white,
-    //   ),
-    // );
-    var img = ImageSlideshow(
-      width: double.infinity,
-      height: double.infinity,
-      initialPage: widget._imageIndex,
-      indicatorColor: Colors.blue,
-        isLoop: true,
-        onPageChanged: (value) {
-          setState(() {
-            widget._imageIndex = value;
-          });
-        },
-        children: [
+    // var img = ImageSlideshow(
+    //   width: double.infinity,
+    //   height: double.infinity,
+    //   initialPage: widget._imageIndex,
+    //   indicatorColor: Colors.blue,
+    //     isLoop: true,
+    //     onPageChanged: (value) {
+    //       setState(() {
+    //         widget._imageIndex = value;
+    //       });
+    //     },
+    //     children: [
+    //   for (var i = 0; i < widget._images.length; i++)
+    //     Image.asset(widget._images[i]),
+    // ]);
+
+    var images = <Widget>[
       for (var i = 0; i < widget._images.length; i++)
-        Image.asset(widget._images[i]),
-    ]);
+        Image.asset(widget._images[i])
+    ];
+    // var img = Column(
+    //   children: <Widget>[
+    //   CarouselSlider(
+    //   items: images,
+    //   options: CarouselOptions(height: double.infinity,autoPlay: false),
+    //   carouselController: buttonCarouselController,
+    // ),
+    //     ElevatedButton(
+    //       onPressed: () => buttonCarouselController.nextPage(
+    //           duration: Duration(milliseconds: 300), curve: Curves.linear),
+    //       child: Text('→'),
+    //     )
+    //   ]
+    // );
+    var img = CarouselSlider(
+      items: images,
+      options: CarouselOptions(
+          height: double.infinity,
+          autoPlay: false,
+          onPageChanged: (value, reason) {
+            setState(() {
+              widget._imageIndex = value;
+            });
+          }),
+      carouselController: buttonCarouselController,
+    );
+    // var img = CarouselSlider(
+    //   items: images,
+    //   options: CarouselOptions(height: double.infinity,autoPlay: false),
+    //   carouselController: buttonCarouselController,
+    // );
 
     return img;
+  }
+
+  nextPage() {
+    buttonCarouselController.nextPage(
+        duration: Duration(milliseconds: 300), curve: Curves.linear);
+  }
+
+  previousPage() {
+    buttonCarouselController.previousPage(
+        duration: Duration(milliseconds: 300), curve: Curves.linear);
   }
 
   getImageName() {
